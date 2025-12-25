@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:scure_pass/data/db/sqlite.dart';
+import 'package:scure_pass/models/user_model.dart';
+import 'package:scure_pass/views/home_view.dart';
 import 'package:scure_pass/views/login_view.dart';
 import 'package:scure_pass/widgets/custom_button.dart';
 import 'package:scure_pass/widgets/logo.dart';
@@ -27,6 +29,42 @@ class _SignUpViewState extends State<SignUpView> {
   final passwordFocus = FocusNode();
   final passwordConFocus = FocusNode();
 
+  final db = DBHelper();
+
+  //! ---- Signup
+  signUp() async {
+    final result = await db.signup(
+      User(
+        name: nameController.text,
+        username: usernameController.text,
+        hashedPassword: db.hashPassword(passwordController.text),
+        createdAt: DateTime.now(),
+      ),
+    );
+
+    if (!mounted) return;
+    if (result != -1) {
+      // Sign Up  Success
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Account Created Successful"),
+          backgroundColor: Colors.green,
+        ),
+      );
+      //If Sign Up is correct,
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => const LoginView()),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Username is taken"),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
 
   @override
   void dispose() {
@@ -74,7 +112,6 @@ class _SignUpViewState extends State<SignUpView> {
 
           //! ---- Name
           nameField(context),
-          
 
           const SizedBox(height: 20),
 
@@ -235,7 +272,9 @@ class _SignUpViewState extends State<SignUpView> {
     return CustomButton(
       text: "Done",
       onTap: () {
-        // todo Sign Up
+        if (formKey.currentState!.validate()) {
+          signUp();
+        }
       },
     );
   }

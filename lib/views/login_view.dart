@@ -1,5 +1,6 @@
 import "package:flutter/material.dart";
 import "package:scure_pass/data/db/sqlite.dart";
+import "package:scure_pass/models/user_model.dart";
 import "package:scure_pass/views/home_view.dart";
 import "package:scure_pass/views/signup_view.dart";
 import "package:scure_pass/widgets/custom_button.dart";
@@ -22,6 +23,40 @@ class _LoginViewState extends State<LoginView> {
   final passwordFocus = FocusNode();
   //! ---- Password
   bool _isHidden = true;
+
+  final db = DBHelper();
+
+  //! ---- Login 
+  login() async {
+    final isLogin = await db.login(
+      User(
+        username: userNameController.text,
+        hashedPassword: db.hashPassword(passwordController.text),
+      ),
+    );
+    if (!mounted) return;
+    if (isLogin) {
+      // Login Success
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Login Successful"),
+          backgroundColor: Colors.green,
+        ),
+      );
+      //If login is correct,
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const HomeView()),
+      );
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Invalid username or password"),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
 
   @override
   void dispose() {
@@ -133,7 +168,9 @@ class _LoginViewState extends State<LoginView> {
     return CustomButton(
       text: "Sign In",
       onTap: () {
-        //TODO login
+        if (formKey.currentState!.validate()) {
+          login();
+        }
       },
     );
   }
