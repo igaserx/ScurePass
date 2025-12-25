@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:scure_pass/data/db/sqlite.dart';
 import 'package:scure_pass/views/login_view.dart';
 import 'package:scure_pass/widgets/custom_button.dart';
 import 'package:scure_pass/widgets/logo.dart';
@@ -15,14 +16,14 @@ class _SignUpViewState extends State<SignUpView> {
   final formKey = GlobalKey<FormState>();
   //! ---- Controllers
   final usernameController = TextEditingController();
-  final emailController = TextEditingController();
+  final nameController = TextEditingController();
   final passwordController = TextEditingController();
   final passwordConController = TextEditingController();
   //! ---- passwordsVisibility
   bool _isHidden = true;
   bool _isHidden2 = true;
   //! ---- Focus
-  final emailFocus = FocusNode();
+  final usernameFocus = FocusNode();
   final passwordFocus = FocusNode();
   final passwordConFocus = FocusNode();
 
@@ -31,11 +32,11 @@ class _SignUpViewState extends State<SignUpView> {
   void dispose() {
     //! ---- Controllers
     usernameController.dispose();
-    emailController.dispose();
+    nameController.dispose();
     passwordController.dispose();
     passwordConController.dispose();
     //! ---- Focus
-    emailFocus.dispose();
+    usernameFocus.dispose();
     passwordFocus.dispose();
     passwordConFocus.dispose();
     super.dispose();
@@ -71,13 +72,14 @@ class _SignUpViewState extends State<SignUpView> {
           _headerText(),
           const SizedBox(height: 40),
 
-          //! ---- User Name
-          userNameField(context),
+          //! ---- Name
+          nameField(context),
+          
 
           const SizedBox(height: 20),
 
-          //! ---- Email
-          emailField(context),
+          //! ---- User Name
+          userNameField(context),
 
           const SizedBox(height: 20),
 
@@ -106,10 +108,10 @@ class _SignUpViewState extends State<SignUpView> {
   TextFormField userNameField(BuildContext context) {
     return TextFormField(
       controller: usernameController,
+      focusNode: usernameFocus,
       validator: (value) => value!.isEmpty ? 'Required' : null,
-      autofocus: true,
       onFieldSubmitted: (value) {
-        FocusScope.of(context).requestFocus(emailFocus);
+        FocusScope.of(context).requestFocus(passwordFocus);
       },
       decoration: InputDecoration(
         labelText: "Username",
@@ -119,26 +121,22 @@ class _SignUpViewState extends State<SignUpView> {
     );
   }
 
-  TextFormField emailField(BuildContext context) {
+  TextFormField nameField(BuildContext context) {
     return TextFormField(
-      controller: emailController,
+      controller: nameController,
+      autofocus: true,
       validator: (value) {
         if (value == null || value.isEmpty) {
-          return "Email is required";
-        }
-        if (!value.contains("@")) {
-          return "Enter a valid email";
+          return "Name is required";
         }
         return null;
       },
-      focusNode: emailFocus,
       onFieldSubmitted: (value) {
-        FocusScope.of(context).requestFocus(passwordFocus);
+        FocusScope.of(context).requestFocus(usernameFocus);
       },
-      keyboardType: TextInputType.emailAddress,
       decoration: InputDecoration(
-        labelText: "Email",
-        prefixIcon: const Icon(Icons.email_outlined),
+        labelText: "Name",
+        prefixIcon: const Icon(Icons.account_circle),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
       ),
     );

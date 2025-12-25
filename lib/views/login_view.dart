@@ -1,7 +1,9 @@
-import 'package:flutter/material.dart';
-import 'package:scure_pass/views/signup_view.dart';
-import 'package:scure_pass/widgets/custom_button.dart';
-import 'package:scure_pass/widgets/logo.dart';
+import "package:flutter/material.dart";
+import "package:scure_pass/data/db/sqlite.dart";
+import "package:scure_pass/views/home_view.dart";
+import "package:scure_pass/views/signup_view.dart";
+import "package:scure_pass/widgets/custom_button.dart";
+import "package:scure_pass/widgets/logo.dart";
 
 class LoginView extends StatefulWidget {
   const LoginView({super.key});
@@ -14,7 +16,7 @@ class _LoginViewState extends State<LoginView> {
   //! ---- Key
   final formKey = GlobalKey<FormState>();
   //! ---- Controllers
-  final usernameController = TextEditingController();
+  final userNameController = TextEditingController();
   final passwordController = TextEditingController();
   //! ---- Focus
   final passwordFocus = FocusNode();
@@ -23,7 +25,7 @@ class _LoginViewState extends State<LoginView> {
 
   @override
   void dispose() {
-    usernameController.dispose();
+    userNameController.dispose();
     passwordController.dispose();
     //! ----
     passwordFocus.dispose();
@@ -63,7 +65,7 @@ class _LoginViewState extends State<LoginView> {
           const SizedBox(height: 40),
 
           //! ------- Email
-          emailField(context),
+          userNameField(context),
 
           const SizedBox(height: 20),
 
@@ -136,23 +138,22 @@ class _LoginViewState extends State<LoginView> {
     );
   }
 
-  TextFormField emailField(BuildContext context) {
+  TextFormField userNameField(BuildContext context) {
     return TextFormField(
-      controller: usernameController,
+      controller: userNameController,
       autofocus: true,
       validator: (value) {
         if (value == null || value.isEmpty) {
-          return "Email is required";
+          return "Username is required";
         }
 
         return null;
       },
       onFieldSubmitted: (_) =>
           FocusScope.of(context).requestFocus(passwordFocus),
-      keyboardType: TextInputType.emailAddress,
       decoration: InputDecoration(
-        labelText: "Email",
-        prefixIcon: const Icon(Icons.email_outlined),
+        labelText: "Username",
+        prefixIcon: const Icon(Icons.person),
         border: OutlineInputBorder(borderRadius: BorderRadius.circular(14)),
       ),
     );
