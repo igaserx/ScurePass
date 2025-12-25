@@ -1,16 +1,16 @@
 class User {
   final int? id;
-  final String name;
+  final String? name;
   final String username;
   final String hashedPassword;
-  final DateTime createdAt;
+  final DateTime? createdAt;
 
   User({
     this.id,
-    required this.name,
+    this.name,
     required this.username,
     required this.hashedPassword,
-    required this.createdAt,
+    this.createdAt,
   });
 
   Map<String, dynamic> toMap() {
@@ -19,7 +19,7 @@ class User {
       "name": name,
       "username": username,
       "password": hashedPassword,
-      "created_at": createdAt.toIso8601String(),
+      "created_at": createdAt?.toIso8601String(),
     };
   }
 
