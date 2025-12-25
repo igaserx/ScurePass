@@ -1,12 +1,13 @@
+import "dart:convert";
+import "package:crypto/crypto.dart";
 import "package:sqflite/sqflite.dart";
 import "package:path/path.dart";
 
 class DBHelper {
-  
   //! ---- Name
   final databaseName = "scure_pass.db";
-  
-  //! ---- Tables 
+
+  //! ---- Tables
   final String userTable = '''
       CREATE TABLE users (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -43,5 +44,12 @@ class DBHelper {
         await db.execute(passwordsTable);
       },
     );
+  }
+
+  //! ---- Hashing Passwords
+  String _hashPassword(String password) {
+    final bytes = utf8.encode(password);
+    final digest = sha256.convert(bytes);
+    return digest.toString();
   }
 }
