@@ -248,7 +248,6 @@ class _PasswordGeneratorState extends State<PasswordGenerator> {
               Container(
                 width: 70,
                 decoration: BoxDecoration(
-                  color: Colors.grey.shade200,
                   borderRadius: BorderRadius.circular(8),
                   border: Border.all(color: Colors.grey.shade400),
                 ),
