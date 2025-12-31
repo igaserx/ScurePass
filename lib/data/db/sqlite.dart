@@ -1,6 +1,3 @@
-import "dart:convert";
-import "package:crypto/crypto.dart";
-import "package:scure_pass/models/user_model.dart";
 import "package:sqflite/sqflite.dart";
 import "package:path/path.dart";
 
@@ -30,9 +27,20 @@ class DBHelper {
         FOREIGN KEY (user_id) REFERENCES users (id)
       )
     ''';
+  
+  static final DBHelper instance = DBHelper._init();
+  static Database? _database;
 
+  DBHelper._init();
+
+  Future<Database> get database async {
+    if (_database != null) return _database!;
+    _database = await _initDB();
+    return _database!;
+  }
+  
   //! ---- Init
-  Future<Database> initDB() async {
+  Future<Database> _initDB() async {
     final databasePath = await getDatabasesPath();
     final path = join(databasePath, databaseName);
 
@@ -45,49 +53,5 @@ class DBHelper {
         await db.execute(passwordsTable);
       },
     );
-  }
-
-  //! ---- Hashing Passwords
-  String hashPassword(String password) {
-    final bytes = utf8.encode(password);
-    final digest = sha256.convert(bytes);
-    return digest.toString();
-  }
-
-  //! ---- Sign in
-  Future<bool> login(User user) async {
-    final Database db = await initDB();
-
-    final username = user.username;
-    final hashedPassword = user.hashedPassword;
-
-    final userRow = await db.rawQuery(
-      "SELECT * FROM users WHERE username = ? AND password = ?",
-      [username, hashedPassword],
-    );
-
-    if (userRow.isNotEmpty) {
-      // Sign in success
-      return true;
-    } else {
-      return false;
-    }
-  }
-
-  //! ---- Sign Up
-  Future<int> signup(User user) async {
-    final Database db = await initDB();
-
-    // Ensure username doesn"t exist
-    final userRow = await db.rawQuery(
-      "SELECT * FROM users WHERE username = ?",
-      [user.username],
-    );
-    if (userRow.isNotEmpty) {
-      return -1;
-    }
-    
-    // add new user 
-    return await db.insert('users', user.toMap());
   }
 }
