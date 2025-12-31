@@ -1,6 +1,9 @@
 import "package:flutter/material.dart";
-import "package:scure_pass/data/db/sqlite.dart";
-import "package:scure_pass/models/user_model.dart";
+import "package:flutter_bloc/flutter_bloc.dart";
+import "package:scure_pass/controllers/pass_cubit.dart";
+import "package:scure_pass/data/repo/passwords_repo.dart";
+import "package:scure_pass/data/repo/user_repo.dart";
+import "package:scure_pass/data/services/session_service.dart";
 import "package:scure_pass/views/home_view.dart";
 import "package:scure_pass/views/signup_view.dart";
 import "package:scure_pass/widgets/custom_button.dart";
@@ -24,18 +27,17 @@ class _LoginViewState extends State<LoginView> {
   //! ---- Password
   bool _isHidden = true;
 
-  final db = DBHelper();
+  final userRepo = UserRepo();
 
-  //! ---- Login 
+  //! ---- Login
   login() async {
-    final isLogin = await db.login(
-      User(
-        username: userNameController.text,
-        hashedPassword: db.hashPassword(passwordController.text),
-      ),
+    final user = await userRepo.login(
+      username: userNameController.text.trim(),
+      password: passwordController.text,
     );
-    if (!mounted) return;
-    if (isLogin) {
+    if (user != null) {
+      await SessionManager.saveUserId(user.id!);
+      if (!mounted) return;
       // Login Success
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
@@ -43,10 +45,16 @@ class _LoginViewState extends State<LoginView> {
           backgroundColor: Colors.green,
         ),
       );
-      //If login is correct,
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const HomeView()),
+        MaterialPageRoute(
+          builder: (context) => BlocProvider(
+            create: (context) =>
+                PasswordCubit(passRepo: PasswordsRepo(), userId: user.id!)
+                  ..getPasswords(),
+            child: HomeView(user: user),
+          ),
+        ),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:scure_pass/data/db/sqlite.dart';
+import 'package:scure_pass/data/repo/user_repo.dart';
 import 'package:scure_pass/models/user_model.dart';
-import 'package:scure_pass/views/home_view.dart';
 import 'package:scure_pass/views/login_view.dart';
 import 'package:scure_pass/widgets/custom_button.dart';
 import 'package:scure_pass/widgets/logo.dart';
@@ -29,21 +28,21 @@ class _SignUpViewState extends State<SignUpView> {
   final passwordFocus = FocusNode();
   final passwordConFocus = FocusNode();
 
-  final db = DBHelper();
+  final userRepo = UserRepo();
 
   //! ---- Signup
   signUp() async {
-    final result = await db.signup(
+    final result = await userRepo.signup(
       User(
         name: nameController.text,
         username: usernameController.text,
-        hashedPassword: db.hashPassword(passwordController.text),
+        password: passwordController.text,
         createdAt: DateTime.now(),
       ),
     );
 
     if (!mounted) return;
-    if (result != -1) {
+    if (result != null) {
       // Sign Up  Success
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
