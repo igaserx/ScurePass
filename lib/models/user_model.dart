@@ -1,16 +1,16 @@
 class User {
   final int? id;
-  final String? name;
+  final String name;
   final String username;
-  final String hashedPassword;
-  final DateTime? createdAt;
+  final String password;
+  final DateTime createdAt;
 
   User({
     this.id,
-    this.name,
+    required this.name,
     required this.username,
-    required this.hashedPassword,
-    this.createdAt,
+    required this.password,
+    required this.createdAt,
   });
 
   Map<String, dynamic> toMap() {
@@ -18,8 +18,8 @@ class User {
       "id": id,
       "name": name,
       "username": username,
-      "password": hashedPassword,
-      "created_at": createdAt?.toIso8601String(),
+      "password": password,
+      "created_at": createdAt.toIso8601String(),
     };
   }
 
@@ -28,7 +28,7 @@ class User {
       id: map["id"],
       name: map["name"],
       username: map["username"],
-      hashedPassword: map["password"],
+      password: map["password"],
       createdAt: DateTime.parse(map["created_at"]),
     );
   }
